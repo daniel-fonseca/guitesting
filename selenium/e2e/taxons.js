@@ -14,8 +14,8 @@ describe('taxons', () => {
 
   beforeEach(async () => {
     driver.manage().deleteAllCookies();
-    await driver.get('http://localhost:9990/admin');
-    // await driver.get('http://150.165.75.99:9990/admin');
+    await driver.get('http://localhost:8080/admin');
+    // await driver.get('http://150.165.75.99:8080/admin');
     await driver.findElement(By.id('_username')).sendKeys('sylius');
     await driver.findElement(By.id('_password')).sendKeys('sylius');
     await driver.findElement(By.css('.primary')).click();
@@ -39,7 +39,7 @@ describe('taxons', () => {
     // Clikc on Save changes button
     await driver.findElement(By.id('sylius_save_changes_button')).click();
 
-    await driver.get('http://localhost:9990/');
+    await driver.get('http://localhost:8080/');
 
     // Assert that Dresses is renamed to Dresses Top
     const bodyText = await driver.findElement(By.tagName('body')).getText();
