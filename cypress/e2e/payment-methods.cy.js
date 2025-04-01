@@ -22,6 +22,7 @@ describe('payment methods', () => {
     // Assert that payment method has been updated
     cy.get('body').should('contain', 'Payment method has been successfully updated.');
   });
+
   it('filtra o método de pagamento bank transfer e verifica visibilidade', () => {
     // Acessa o menu Payment Methods
     cy.clickInFirst('a[href="/admin/payment-methods/"]');
