@@ -22,7 +22,6 @@ describe('payment methods', () => {
     // Assert that payment method has been updated
     cy.get('body').should('contain', 'Payment method has been successfully updated.');
   });
-
   it('filtra o método de pagamento bank transfer e verifica visibilidade', () => {
     // Acessa o menu Payment Methods
     cy.clickInFirst('a[href="/admin/payment-methods/"]');
@@ -33,14 +32,15 @@ describe('payment methods', () => {
     // Espera o texto "Bank transfer" aparecer de forma robusta
     cy.contains('Bank transfer', { timeout: 10000 }).should('be.visible');
   });
-
   it('cria um novo método de pagamento Pix BB e valida presença na lista', () => {
     // Acessa o menu Payment Methods
     cy.clickInFirst('a[href="/admin/payment-methods/"]');
     // Clica em "Create"
-    cy.contains('Create').click();
+    cy.contains('Create', { timeout: 10000 }).click();
+    // Garante que está na página de criação
+    cy.url().should('include', '/admin/payment-methods/new');
     // Preenche os campos obrigatórios
-    cy.get('[id="sylius_payment_method_translations_en_US_name"]').type('Pix BB');
+    cy.get('[id="sylius_payment_method_translations_en_US_name"]').should('be.visible').type('Pix BB');
     cy.get('[id="sylius_payment_method_code"]').type('pix_bb');
     // Seleciona "Offline" como gateway
     cy.get('[id="sylius_payment_method_gatewayConfig_gatewayName"]').select('Offline');
@@ -61,8 +61,10 @@ describe('payment methods', () => {
     // Filtra pelo método Pix BB
     cy.get('[id="criteria_search_value"]').type('pix');
     cy.get('*[class^="ui blue labeled icon button"]').click();
-    // Clica em editar o último método da lista
-    cy.get('*[class^="ui labeled icon button "]').last().click();
+    // Clica em editar diretamente a linha do Pix BB
+    cy.contains('Pix BB', { timeout: 10000 }).parent().within(() => {
+      cy.get('a').contains('Edit').click();
+    });
     // Desmarca o checkbox de "Enable"
     cy.get('[id="sylius_payment_method_enabled"]').uncheck();
     // Salva alterações
