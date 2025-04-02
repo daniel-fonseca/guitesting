@@ -113,4 +113,34 @@ describe('payment methods', function () {
     assert(tableText.includes('Position'));
   });
   
+
+  it('verifica que a URL de listagem termina com /admin/payment-methods', async () => {
+    await driver.findElement(By.linkText('Payment methods')).click();
+    const url = await driver.getCurrentUrl();
+    assert(url.endsWith('/admin/payment-methods'));
+  });
+
+  it('verifica se há pelo menos um botão de editar visível', async () => {
+    await driver.findElement(By.linkText('Payment methods')).click();
+    const buttons = await driver.findElements(By.css('*[class^="ui labeled icon button "]'));
+    assert(buttons.length > 0);
+  });
+
+  it('valida que os campos de filtro estão presentes na listagem', async () => {
+    await driver.findElement(By.linkText('Payment methods')).click();
+    await driver.findElement(By.id('criteria_search_value'));
+    await driver.findElement(By.css('*[class^="ui blue labeled icon button"]'));
+  });
+
+  it('verifica que o botão "Create" está presente no topo da listagem', async () => {
+    await driver.findElement(By.linkText('Payment methods')).click();
+    const createBtn = await driver.findElement(By.xpath("//a[contains(text(), 'Create')]"));
+    assert(await createBtn.isDisplayed());
+  });
+
+  it('verifica que há pelo menos uma linha na tabela de métodos de pagamento', async () => {
+    await driver.findElement(By.linkText('Payment methods')).click();
+    const rows = await driver.findElements(By.css('table tbody tr'));
+    assert(rows.length > 0);
+  });
 });
