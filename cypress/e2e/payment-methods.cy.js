@@ -74,4 +74,30 @@ describe('payment methods', () => {
     cy.get('table').should('contain.text', 'Position');
   });
   
+  it('verifica se campo de busca é visível na listagem de métodos de pagamento', () => {
+    cy.clickInFirst('a[href="/admin/payment-methods/"]');
+    cy.get('[id="criteria_search_value"]').should('be.visible');
+  });
+
+  it('valida que botão de filtro está presente e habilitado', () => {
+    cy.clickInFirst('a[href="/admin/payment-methods/"]');
+    cy.get('*[class^="ui blue labeled icon button"]').should('be.visible').and('not.be.disabled');
+  });
+
+  it('acessa tela de edição de método de pagamento e verifica título', () => {
+    cy.clickInFirst('a[href="/admin/payment-methods/"]');
+    cy.get('*[class^="ui labeled icon button "]').first().click();
+    cy.get('h1.ui.header').should('contain.text', 'Editing payment method');
+  });
+
+  it('verifica se botão de salvar alterações está presente na edição', () => {
+    cy.clickInFirst('a[href="/admin/payment-methods/"]');
+    cy.get('*[class^="ui labeled icon button "]').first().click();
+    cy.get('[id="sylius_save_changes_button"]').should('be.visible');
+  });
+
+  it('verifica se há pelo menos um botão de edição na listagem de métodos', () => {
+    cy.clickInFirst('a[href="/admin/payment-methods/"]');
+    cy.get('*[class^="ui labeled icon button "]').its('length').should('be.gte', 1);
+  });
 });
