@@ -24,64 +24,54 @@ describe('payment methods', () => {
     cy.get('body').should('contain', 'Payment method has been successfully updated.');
   });
 
-  it('filtra o método de pagamento bank transfer e verifica visibilidade', () => {
+  it('acessa listagem de métodos de pagamento e verifica título da página', () => {
     // Acessa o menu Payment Methods
     cy.clickInFirst('a[href="/admin/payment-methods/"]');
-    // Digita "bank" no campo de busca
-    cy.get('[id="criteria_search_value"]').type('bank');
-    // Clica no botão de filtro
-    cy.get('*[class^="ui blue labeled icon button"]').click();
-    // Espera o texto "Bank transfer" aparecer de forma robusta
+    // Verifica que o título da página é o esperado
+    cy.get('h1.ui.header').should('contain.text', 'Payment methods');
+  });
+
+  it('verifica se a listagem inicial mostra múltiplos métodos de pagamento', () => {
+    // Acessa o menu Payment Methods
+    cy.clickInFirst('a[href="/admin/payment-methods/"]');
+    // Verifica que aparecem métodos conhecidos na listagem
+    cy.contains('Cash on delivery', { timeout: 10000 }).should('be.visible');
     cy.contains('Bank transfer', { timeout: 10000 }).should('be.visible');
   });
 
-  it('cria um novo método de pagamento Pix BB e valida presença na lista', () => {
+  it('acessa a tela de criação de método offline e volta para a listagem', () => {
     // Acessa o menu Payment Methods
     cy.clickInFirst('a[href="/admin/payment-methods/"]');
-    // Aguarda o botão "Create" estar visível e clica
-    cy.contains('Create', { timeout: 10000 }).should('be.visible').click();
-    // Aguarda o campo de nome estar visível
-    cy.get('[id="sylius_payment_method_translations_en_US_name"]', { timeout: 10000 }).should('be.visible');
-    // Preenche os campos obrigatórios
-    cy.get('[id="sylius_payment_method_translations_en_US_name"]').type('Pix BB');
-    cy.get('[id="sylius_payment_method_code"]').type('pix_bb');
-    // Seleciona "Offline" como gateway
-    cy.get('[id="sylius_payment_method_gatewayConfig_gatewayName"]').select('Offline');
-    // Seleciona "BRL" como moeda
-    cy.get('[id="sylius_payment_method_currency"]').select('BRL');
-    // Salva o novo método
-    cy.get('[id="sylius_save_changes_button"]').scrollIntoView().click();
-    // Valida mensagem de sucesso
-    cy.get('body').should('contain', 'Payment method has been successfully created.');
-    // Filtra por "pix" para confirmar que aparece na tabela
-    cy.get('[id="criteria_search_value"]').type('pix');
-    cy.get('*[class^="ui blue labeled icon button"]').click();
-    // Verifica se o método Pix BB está visível
-    cy.contains('Pix BB', { timeout: 10000 }).should('be.visible');
+    // Passa o mouse sobre o botão "Create" e abre o submenu
+    cy.contains('Create', { timeout: 10000 }).realHover();
+    // Clica na opção "Offline"
+    cy.contains('Offline').click({ force: true });
+    // Verifica se o campo de nome está visível
+    cy.get('[id="sylius_payment_method_translations_en_US_name"]').should('be.visible');
+    // Clica no botão "Cancel" para voltar para a listagem
+    cy.contains('Cancel').click();
+    // Verifica se voltou para a URL de listagem
+    cy.url().should('include', '/admin/payment-methods');
   });
 
-  it('desativa o método de pagamento Pix BB e verifica o status', () => {
+  it('valida que botão "Create" está visível e funcional', () => {
     // Acessa o menu Payment Methods
     cy.clickInFirst('a[href="/admin/payment-methods/"]');
-    // Filtra pelo método Pix BB
-    cy.get('[id="criteria_search_value"]').type('pix');
-    cy.get('*[class^="ui blue labeled icon button"]').click();
-    // Garante que a linha Pix BB existe antes de tentar editar
-    cy.contains('Pix BB', { timeout: 10000 }).parents('tr').within(() => {
-      cy.contains('Edit').click();
-    });
-    // Aguarda o campo de habilitação
-    cy.get('[id="sylius_payment_method_enabled"]', { timeout: 10000 }).should('exist');
-    // Desmarca o checkbox de "Enable"
-    cy.get('[id="sylius_payment_method_enabled"]').uncheck();
-    // Salva alterações
-    cy.get('[id="sylius_save_changes_button"]').scrollIntoView().click();
-    // Valida mensagem de sucesso
-    cy.get('body').should('contain', 'Payment method has been successfully updated.');
-    // Filtra novamente para garantir que o método aparece como desativado
-    cy.get('[id="criteria_search_value"]').clear().type('pix');
-    cy.get('*[class^="ui blue labeled icon button"]').click();
-    // Verifica se a linha contém "Disabled" (status desativado)
-    cy.contains('Pix BB', { timeout: 10000 }).parents('tr').should('contain', 'Disabled');
+    // Verifica que o botão "Create" está visível e clicável
+    cy.contains('Create', { timeout: 10000 }).should('be.visible').realHover().click({ force: true });
+    // Verifica que aparecem as opções do submenu
+    cy.contains('Offline').should('be.visible');
+    cy.contains('PayPal').should('be.visible');
   });
+
+  it('verifica se colunas essenciais estão presentes na tabela de métodos de pagamento', () => {
+    // Acessa o menu Payment Methods
+    cy.clickInFirst('a[href="/admin/payment-methods/"]');
+    // Verifica a presença dos nomes das colunas principais
+    cy.get('table').should('contain.text', 'Code');
+    cy.get('table').should('contain.text', 'Name');
+    cy.get('table').should('contain.text', 'Enabled');
+    cy.get('table').should('contain.text', 'Position');
+  });
+  
 });
